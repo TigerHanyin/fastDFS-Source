@@ -124,3 +124,44 @@ tracker_server=自己ubuntu虚拟机的ip地址:22122
    sudo fdfs_upload_file /etc/fdfs/client.conf 要上传的图片文件 
 
    如果返回类似**group1/M00/00/00/rBIK6VcaP0aARXXvAAHrUgHEviQ394.jpg **的文件id则说明文件上传成功
+
+### 1.4使用go客户端上传文件测试
+
+1.4.1 下载包 go get -u -v github.com/weilaihui/fdfs_client    出现问题 这是因为我们的网络有防火墙，不能直接去google下载相应的包，所以就失败啦
+
+​	 解决：1）在`~/workspace/go/src`目录下面创建一个golang.org/x目录 
+
+​	cd  ~/workspace/go/src
+
+​	mkdir -p golang.org/x
+
+​	2）进入golang.org/x下载两个包
+
+​	cd golang.org/x
+​	git clone https://github.com/golang/crypto.git
+​	git clone https://github.com/golang/sys.git
+
+​	3）然后再执行最初的下载命令
+
+​	go get github.com/weilaihui/fdfs_client
+
+1.4.2 go操作fastDFS的方法
+
+​	1）先导包，把我们下载的包导入
+
+​	import "github.com/weilaihui/fdfs_client"
+
+​	2）导包之后,我们需要指定配置文件生成客户端对象
+
+​	client,_:=fdfs_client.NewFdfsClient("/etc/fdfs/client.conf")
+
+​	3）接着我们就可以通过client对象执行文件上传，上传有两种方法，一种是通过文件名，一种是通过字节流
+
+​		~通过文件名上传**UploadByFilename **,参数是文件名（必须通过文件名能找到要上传的文件），返回值是fastDFS定义的一个结构体，包含组名和文件ID两部分内容
+
+​		fdfsresponse,err := client.UploadByFilename("flieName")
+
+​		~通过字节流上传**UploadByBuffer**,参数是字节数组和文件后缀，返回值和通过文件名上传一样。
+
+​		fdfsresponse,err := client.UploadByBuffer(fileBuffer,ext)
+
